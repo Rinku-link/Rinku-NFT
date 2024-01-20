@@ -1,0 +1,1 @@
+NFT smart contract for Rinku alpha-test season
