@@ -11,6 +11,9 @@ contract GamerBoomNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
     uint256 public mintCap;
     bool public mintingEnabled = false;
 
+    // Mapping to keep track of addresses that have minted
+    mapping(address => bool) public hasMinted;
+
     // Events
     event MintPriceChanged(uint256 newPrice);
     event MintingEnabled(uint256 mintCap);
@@ -51,12 +54,16 @@ contract GamerBoomNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
         require(_amount <= mintCap, "Exceeds mint cap");
         require(totalSupply() + _amount <= maxSupply, "Exceeds max supply");
         require(msg.value >= mintPrice * _amount, "Incorrect Ether value");
+        require(!hasMinted[msg.sender], "Address has already minted");
 
         for (uint256 i = 0; i < _amount; i++) {
             uint256 newTokenId = totalSupply() + 1;
             _safeMint(msg.sender, newTokenId);
             emit Minted(msg.sender, newTokenId);
         }
+
+        // Mark the sender as having minted
+        hasMinted[msg.sender] = true;
     }
 
     // Withdraw function to allow owner to withdraw funds
