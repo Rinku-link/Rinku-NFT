@@ -5,11 +5,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract GamerBoomNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
-    uint256 public maxSupply;
+contract GenesisBoomerNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
+    uint256 public constant MAX_SUPPLY = 21000;
+    bool public mintingEnabled = false;
     uint256 public mintPrice;
     uint256 public mintCap;
-    bool public mintingEnabled = false;
+    uint256 public mintedSum;
 
     // Mapping to keep track of addresses that have minted
     mapping(address => bool) public hasMinted;
@@ -19,14 +20,13 @@ contract GamerBoomNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
     event MintingEnabled(uint256 mintCap);
     event MintingDisabled();
     event Minted(address to, uint256 tokenId);
-    event UserSigned(address indexed user, string message);
+    event GenesisBoomerProof(address indexed user, string message);
 
-    constructor(uint256 _maxSupply, uint256 _mintPrice) ERC721("GamerBoomNFT", "GBN") {
-        maxSupply = _maxSupply;
+    constructor(uint256 _mintPrice) ERC721("GenesisBoomerNFT", "GBT") {
         mintPrice = _mintPrice;
 
         // Pre-mint 15% of maxSupply
-        uint256 preMintAmount = maxSupply * 15 / 100;
+        uint256 preMintAmount = MAX_SUPPLY * 15 / 100;
         for (uint256 i = 0; i < preMintAmount; i++) {
             _safeMint(owner(), totalSupply() + 1);
             emit Minted(owner(), totalSupply());
@@ -39,6 +39,7 @@ contract GamerBoomNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
     }
 
     function enableMinting(uint256 _mintCap) public onlyOwner {
+        mintedSum = 0;
         mintCap = _mintCap;
         mintingEnabled = true;
         emit MintingEnabled(_mintCap);
@@ -49,33 +50,32 @@ contract GamerBoomNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
         emit MintingDisabled();
     }
 
-    function mint(uint256 _amount) public payable nonReentrant {
+    function mint() public payable nonReentrant {
         require(mintingEnabled, "Minting is not enabled");
-        require(_amount <= mintCap, "Exceeds mint cap");
-        require(totalSupply() + _amount <= maxSupply, "Exceeds max supply");
-        require(msg.value >= mintPrice * _amount, "Incorrect Ether value");
+        require(mintedSum < mintCap, "Exceeds mint cap");
+        require(totalSupply() + 1 <= MAX_SUPPLY, "Exceeds max supply");
+        require(msg.value >= mintPrice, "Incorrect Ether value");
         require(!hasMinted[msg.sender], "Address has already minted");
-
-        for (uint256 i = 0; i < _amount; i++) {
-            uint256 newTokenId = totalSupply() + 1;
-            _safeMint(msg.sender, newTokenId);
-            emit Minted(msg.sender, newTokenId);
-        }
 
         // Mark the sender as having minted
         hasMinted[msg.sender] = true;
+        mintedSum++;
+        uint256 newTokenId = totalSupply() + 1;
+        _safeMint(msg.sender, newTokenId);
+        emit Minted(msg.sender, newTokenId);
     }
 
     // Withdraw function to allow owner to withdraw funds
-    function withdraw() public onlyOwner {
+    function withdraw() public onlyOwner nonReentrant {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
-        (bool success, ) = owner().call{value: balance}("");
+        (bool success,) = owner().call{value: balance}("");
         require(success, "Withdrawal failed");
     }
 
     // User sign a message
-    function signMessage(string memory message) public {
-        emit UserSigned(msg.sender, message);
+    function signGenesisProof() public {
+        require(hasMinted[msg.sender], "Mint Genesis Boomer NFT first");
+        emit GenesisBoomerProof(msg.sender, "Me Brave Boomer!");
     }
 }
