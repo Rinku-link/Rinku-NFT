@@ -12,3 +12,8 @@ docs/
 
 # Dotenv file
 .env
+
+lib/
+test/
+script/
+remappings.txt
