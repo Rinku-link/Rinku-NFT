@@ -29,7 +29,9 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
 
     constructor(uint256 _mintPrice) ERC721("GenesisBoomerNFT", "GBT") Ownable(msg.sender) {
         mintPrice = _mintPrice;
+    }
 
+    function preMint() public onlyOwner {
         // Pre-mint 15% of maxSupply
         uint256 preMintAmount = MAX_SUPPLY * 15 / 100;
         for (uint256 i = 1; i <= preMintAmount; i++) {
