@@ -54,7 +54,6 @@ contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
     }
 
     function transferFrom(address from, address to, uint256 tokenId) public override {
-        require(from == address(0), "Transfer not allowed");
-        super.transferFrom(from, to, tokenId);
+        revert("Transfer not allowed");
     }
 }
