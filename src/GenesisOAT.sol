@@ -30,7 +30,7 @@ contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
         return TOKEN_URI;
     }
 
-    function enableMinting(uint256 _mintCap) public onlyOwner {
+    function enableMinting() public onlyOwner {
         mintingEnabled = true;
         emit MintingEnabled();
     }
