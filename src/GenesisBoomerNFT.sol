@@ -4,18 +4,21 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
     uint256 public constant MAX_SUPPLY = 21000;
-    string public constant TOKEN_URI = "";
+    string public constant TOKEN_URI = "ipfs://Qmbwuk7qyE1XXycoapHVoWqFmg5C7nBry6edVLo8CEbd8d";
     bool public mintingEnabled = false;
     uint256 public mintPrice;
     uint256 public mintCap;
     uint256 public mintedSum;
     uint256 public totalSupply;
+    bytes32 public root; // root of merkle tree for airdrops
 
     // Mapping to keep track of addresses that have minted
     mapping(address => bool) public hasMinted;
+    mapping(address => bool) public airdropClaimed;
 
     // Events
     event MintPriceChanged(uint256 newPrice);
@@ -30,8 +33,8 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         // Pre-mint 15% of maxSupply
         uint256 preMintAmount = MAX_SUPPLY * 15 / 100;
         for (uint256 i = 1; i <= preMintAmount; i++) {
-            _safeMint(owner(), i);
             totalSupply++;
+            _safeMint(owner(), i);
         }
         emit Minted(owner(), totalSupply);
     }
@@ -41,13 +44,13 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         return _baseURI();
     }
 
-    function _baseURI() internal pure override returns (string memory) {
-        return TOKEN_URI;
-    }
-
     function setMintPrice(uint256 _newPrice) public onlyOwner {
         mintPrice = _newPrice;
         emit MintPriceChanged(_newPrice);
+    }
+
+    function setMerkleRoot(bytes32 newMerkleRoot) public onlyOwner {
+        root = newMerkleRoot;
     }
 
     function enableMinting(uint256 _mintCap) public onlyOwner {
@@ -78,6 +81,17 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         emit Minted(msg.sender, newTokenId);
     }
 
+    function claimAidrop(bytes32[] memory proof) public nonReentrant {
+        require(!mintingEnabled, "NFT sale in progress");
+        require(!airdropClaimed[msg.sender], "Already minted");
+        require(totalSupply + 1 <= MAX_SUPPLY, "Exceeds max supply");
+        bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
+        require(MerkleProof.verify(proof, root, leaf), "Invalid Merkle Proof");
+        airdropClaimed[msg.sender] = true;
+        totalSupply++;
+        _safeMint(msg.sender, totalSupply + 1);
+    }
+
     // Withdraw function to allow owner to withdraw funds
     function withdraw() public onlyOwner nonReentrant {
         uint256 balance = address(this).balance;
@@ -90,5 +104,9 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
     function signGenesisProof() public {
         require(hasMinted[msg.sender], "Mint Genesis Boomer NFT first");
         emit GenesisBoomerProof(msg.sender, "Me Brave Boomer!");
+    }
+
+    function _baseURI() internal pure override returns (string memory) {
+        return TOKEN_URI;
     }
 }
