@@ -44,6 +44,10 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         return _baseURI();
     }
 
+    function _baseURI() internal pure override returns (string memory) {
+        return TOKEN_URI;
+    }
+
     function setMintPrice(uint256 _newPrice) public onlyOwner {
         mintPrice = _newPrice;
         emit MintPriceChanged(_newPrice);
@@ -100,13 +104,9 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         require(success, "Withdrawal failed");
     }
 
-    // User sign a message
+    // Genesis testing proof
     function signGenesisProof() public {
         require(hasMinted[msg.sender], "Mint Genesis Boomer NFT first");
         emit GenesisBoomerProof(msg.sender, "Me Brave Boomer!");
-    }
-
-    function _baseURI() internal pure override returns (string memory) {
-        return TOKEN_URI;
     }
 }
