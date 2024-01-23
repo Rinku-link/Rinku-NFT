@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
     string public constant TOKEN_URI = "ipfs://";
-    bool public mintingEnabled = true;
+    bool public mintingEnabled;
     uint256 public totalSupply;
 
     // Mapping to keep track of addresses that have minted
@@ -16,6 +16,7 @@ contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
 
     // Events
     event MintingDisabled();
+    event MintingEnabled();
     event Minted(address to, uint256 tokenId);
 
     constructor() ERC721("GenesisOAT", "GOAT") Ownable(msg.sender) {}
@@ -27,6 +28,11 @@ contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
 
     function _baseURI() internal pure override returns (string memory) {
         return TOKEN_URI;
+    }
+
+    function enableMinting(uint256 _mintCap) public onlyOwner {
+        mintingEnabled = true;
+        emit MintingEnabled();
     }
 
     function disableMinting() public onlyOwner {
