@@ -17,3 +17,5 @@ lib/
 test/
 script/
 remappings.txt
+
+src/artifacts
