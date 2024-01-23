@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
-    string public constant TOKEN_URI = "ipfs://";
+    string public constant TOKEN_URI = "ipfs://QmbtPLfmU86A6DE7aCCaHLTNmqVsadn5Mw5mdmrX2hwQoe";
     bool public mintingEnabled;
     uint256 public totalSupply;
 
