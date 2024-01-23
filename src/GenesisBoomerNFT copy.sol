@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
     uint256 public constant MAX_SUPPLY = 21000;
-    string public constant TOKEN_URI = "ipfs://Qmbwuk7qyE1XXycoapHVoWqFmg5C7nBry6edVLo8CEbd8d";
+    string public constant TOKEN_URI = "ipfs://QmUHkWXS96WmjtJ4SGc1TqEC9LN8Fg6y3rsbLG2mqrgLrz";
     bool public mintingEnabled = false;
     uint256 public mintPrice;
     uint256 public mintCap;
@@ -89,6 +89,7 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         require(!mintingEnabled, "NFT sale in progress");
         require(!airdropClaimed[msg.sender], "Already minted");
         require(totalSupply + 1 <= MAX_SUPPLY, "Exceeds max supply");
+
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
         require(MerkleProof.verify(proof, root, leaf), "Invalid Merkle Proof");
         airdropClaimed[msg.sender] = true;
