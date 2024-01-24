@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
     uint256 public constant MAX_SUPPLY = 21000;
     string public constant TOKEN_URI = "ipfs://QmUHkWXS96WmjtJ4SGc1TqEC9LN8Fg6y3rsbLG2mqrgLrz";
-    bool public mintingEnabled = false;
+    bool public mintingEnabled;
     uint256 public mintPrice;
     uint256 public mintCap;
     uint256 public mintedSum;
@@ -31,14 +31,14 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         mintPrice = _mintPrice;
     }
 
-    function preMint() public onlyOwner {
-        // Pre-mint 15% of maxSupply
-        uint256 preMintAmount = MAX_SUPPLY * 15 / 100;
-        for (uint256 i = 1; i <= preMintAmount; i++) {
+    function preMint(uint256 mintAmount) public onlyOwner {
+        require(totalSupply + mintAmount <= MAX_SUPPLY, "Exceeds max supply");
+
+        for (uint256 i = 1; i <= mintAmount; i++) {
             totalSupply++;
-            _safeMint(owner(), i);
+            _safeMint(owner(), totalSupply);
         }
-        emit Minted(owner(), totalSupply);
+        emit Minted(owner(), mintAmount);
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
@@ -82,7 +82,7 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         hasMinted[msg.sender] = true;
         mintedSum++;
         totalSupply++;
-        uint256 newTokenId = totalSupply + 1;
+        uint256 newTokenId = totalSupply;
         _safeMint(msg.sender, newTokenId);
         emit Minted(msg.sender, newTokenId);
     }
@@ -96,7 +96,7 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         require(MerkleProof.verify(proof, root, leaf), "Invalid Merkle Proof");
         airdropClaimed[msg.sender] = true;
         totalSupply++;
-        _safeMint(msg.sender, totalSupply + 1);
+        _safeMint(msg.sender, totalSupply);
     }
 
     // Withdraw function to allow owner to withdraw funds
@@ -109,7 +109,6 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
 
     // Genesis testing proof
     function signGenesisProof() public {
-        require(hasMinted[msg.sender], "Mint Genesis Boomer NFT first");
         emit GenesisBoomerProof(msg.sender, "Me Brave Boomer!");
     }
 }

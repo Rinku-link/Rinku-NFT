@@ -40,7 +40,7 @@ contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
         emit MintingDisabled();
     }
 
-    function mint() public payable nonReentrant {
+    function mint() public nonReentrant {
         require(mintingEnabled, "Minting is not enabled");
         require(!hasMinted[msg.sender], "Address has already minted");
 
