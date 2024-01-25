@@ -46,8 +46,10 @@ contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
 
         // Mark the sender as having minted
         hasMinted[msg.sender] = true;
-        uint256 newTokenId = totalSupply + 1;
+        totalSupply++;
+        uint256 newTokenId = totalSupply;
         _safeMint(msg.sender, newTokenId);
+
         emit Minted(msg.sender, newTokenId);
     }
 
