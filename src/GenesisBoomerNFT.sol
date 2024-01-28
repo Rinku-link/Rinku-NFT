@@ -18,6 +18,7 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
 
     // Mapping to keep track of addresses that have minted
     mapping(address => bool) public hasMinted;
+    mapping(address => bool) public hasClaimed;
     mapping(address => bool) public airdropClaimed;
 
     // Events
@@ -31,7 +32,7 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         mintPrice = _mintPrice;
     }
 
-    function preMint(uint256 mintAmount) public onlyOwner {
+    function reserve(uint256 mintAmount) public onlyOwner {
         require(totalSupply + mintAmount <= MAX_SUPPLY, "Exceeds max supply");
 
         for (uint256 i = 1; i <= mintAmount; i++) {
