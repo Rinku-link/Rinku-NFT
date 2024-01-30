@@ -88,7 +88,7 @@ contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
         emit Minted(msg.sender, newTokenId);
     }
 
-    function claimAidrop(bytes32[] memory proof) public nonReentrant {
+    function claimAirdrop(bytes32[] memory proof) public nonReentrant {
         require(!mintingEnabled, "NFT sale in progress");
         require(!airdropClaimed[msg.sender], "Already minted");
         require(totalSupply + 1 <= MAX_SUPPLY, "Exceeds max supply");
