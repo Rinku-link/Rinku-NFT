@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract GenesisBoomerNFT is ERC721, ReentrancyGuard, Ownable {
     uint256 public constant MAX_SUPPLY = 21000;
-    string public constant TOKEN_URI = "ipfs://QmUHkWXS96WmjtJ4SGc1TqEC9LN8Fg6y3rsbLG2mqrgLrz";
+    string public constant TOKEN_URI = "ipfs://QmRUcmYJHh3soXsi6nAb3vripQBgHmYdsqFUHkzKX8Fsjd";
     bool public mintingEnabled;
     uint256 public mintPrice;
     uint256 public mintCap;

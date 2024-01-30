@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GenesisOAT is ERC721, ReentrancyGuard, Ownable {
-    string public constant TOKEN_URI = "ipfs://QmbtPLfmU86A6DE7aCCaHLTNmqVsadn5Mw5mdmrX2hwQoe";
+    string public constant TOKEN_URI = "ipfs://QmTNZEjRoNn6AjQkiW5P8gC7RmNdd4GuwPntRS5hECTYPk";
     bool public mintingEnabled;
     uint256 public totalSupply;
 
