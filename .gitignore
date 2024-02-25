@@ -19,3 +19,4 @@ script/
 remappings.txt
 
 src/artifacts
+node_modules
